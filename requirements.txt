@@ -1,0 +1,7 @@
+edgartools==2.22.1
+google-generativeai==0.5.4
+numpy==1.26.4
+pandas==2.2.2
+streamlit==1.34.0
+tqdm==4.66.4
+watchdog==4.0.0

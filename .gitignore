@@ -1,0 +1,7 @@
+**-env/
+sec-edgar-filings
+__pycache__/
+.DS_Store
+*out*/
+*out*.txt
+.cache/
