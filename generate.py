@@ -42,7 +42,7 @@ def get_document_financials(
 
     fails = 0
     gen_res = None
-    while fails < 3 and not gen_res:
+    while not gen_res:
         try:
             gen_res = model.generate_content(
                 f"## Instructions \n \
@@ -59,10 +59,10 @@ def get_document_financials(
             Exception
         ) as e:  # we might've hit the API limit, so wait before trying again
             fails += 1
-            if fails >= 3:
+            if fails > 2:
                 raise e
             print(f"Failed to generate content, retrying in 30 seconds... ({fails}/3)")
-            time.sleep(30)
+            time.sleep(10)
 
     if not gen_res:
         raise Exception("Failed to generate content")
@@ -116,14 +116,21 @@ def get_company_financials(
 
     res = {}
     years = list(filings.keys())
-    for i in tqdm(
-        range(0, len(years), 2), desc=f"Extracting Financials from {filings.ticker}"
-    ):
+    desc = f"Extracting Financials from {filings.ticker} 10-K Filings"
+    progress = st.progress(0, text=desc)
+    for i in tqdm(range(0, len(years), 2), desc=desc):
         year = years[i]
         text = filings[year]
-        res[year] = get_document_financials(f"{text['financials']}", items)
+        try:
+            res[year] = get_document_financials(f"{text['financials']}", items)
+        except Exception as e:
+            print(f"Failed to extract financials for {year}: {e}")
+        finally:
+            progress.progress((i + 1) / len(years), text=desc)
 
+    progress.empty()
     save_dict[items_query_hash] = res
+
     # save pickle
     pkl_path.parent.mkdir(exist_ok=True, parents=True)
     with open(pkl_path, "wb") as pf:
