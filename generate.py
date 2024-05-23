@@ -4,10 +4,11 @@ import os
 import pickle
 import time
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Iterator, List
 
 import google.generativeai as genai
 import streamlit as st
+from google.generativeai.types import GenerateContentResponse
 from tqdm import tqdm
 
 from constants import DEFAULT_ITEMS, MODEL, PREAMBLE
@@ -36,7 +37,6 @@ def get_document_financials(
 
     Retrieval is done using one of Google's Gemini LLM models.
     """
-
     # generate a request string from items
     request_str = ", ".join([f"{item} (`{item.replace(' ', '_')}`)" for item in items])
 
@@ -55,9 +55,8 @@ def get_document_financials(
                 \n\n ## Document \n {document}",
                 generation_config={"response_mime_type": "application/json"},
             )  # result should be a JSON string
-        except (
-            Exception
-        ) as e:  # we might've hit the API limit, so wait before trying again
+        except Exception as e:
+            # we might've hit the API limit, so wait before trying again
             fails += 1
             if fails > 2:
                 raise e
@@ -139,4 +138,50 @@ def get_company_financials(
     return res
 
 
-# def summarize_document(document: str):
+def summarize_filing_document(
+    document: str,
+    section_name: str,
+    ticker: str,
+    year: int,
+    override_instr: str = "",
+    stream: bool = True,
+) -> str | Iterator[str]:
+    """Given a document, summarize it using the Gemini LLM model.
+
+    The function accepts a document string and an optional instruction string
+    to guide the generation of the summary. The function returns the generated
+    summary, by default as a yielded stream of strings for streamlit. If `stream`
+    is false, the function instead returns the summary as a single string.
+    """
+    fails = 0
+    gen_res = None
+    instr = (
+        override_instr
+        if override_instr
+        else "Be concise and to the point. \
+            Feel free to use bullet points or \
+            markdown formatting to organize your response."
+    )
+
+    while not gen_res:
+        try:
+            gen_res = model.generate_content(
+                f"## Instructions \n \
+                Please summarize the following {section_name} section of {ticker}'s {year} 10-K Filing. {instr} \
+                \n\n ## Document \n {document}",
+                stream=stream,
+            )
+        except Exception as e:
+            # we might've hit the API limit, so wait before trying again
+            fails += 1
+            if fails > 2:
+                raise e
+            print(f"Failed to generate content, retrying in 30 seconds... ({fails}/3)")
+            time.sleep(5)
+
+    # helper function to yield responses in stream mode for streamlit
+    def response_yielder(gen_res: GenerateContentResponse) -> Iterator[str]:
+        for i in gen_res:
+            yield i.text
+
+    return gen_res.text if not stream else response_yielder(gen_res)

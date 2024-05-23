@@ -1,32 +1,47 @@
 import streamlit as st
 from edgar import set_identity
 
-from constants import COMPANY_NAME, DISCLAIMER, EMAIL, TICKERS
+from constants import COMPANY_NAME, EMAIL, TICKERS
 from generate import get_company_financials
-from ui import display_financial_data, setup_sidebar
+from ui import display_financial_data, display_summarizer, setup_sidebar
 from utils import get_10k_filing_texts
 
-st.set_page_config(page_title="10-K Filing Analysis", page_icon="📈", layout="wide")
+st.set_page_config(page_title="LLM + 10-K", page_icon="📈", layout="wide")
+set_identity(f"{COMPANY_NAME} {EMAIL}")  # for downloading filings from EDGAR
 
 
 def main():
-    set_identity(f"{COMPANY_NAME} {EMAIL}")  # for downloading filings from EDGAR
-
-    # extract options/settings from sidebar
+    """Entry point for the Streamlit application."""
+    # display sidebar and extract selected options/settings from it
     options = setup_sidebar(TICKERS)
     ticker = options["ticker"]
-    st.header(f"{ticker}'s Key Numbers Over Time", divider="rainbow")
-    st.markdown(DISCLAIMER)
+    mode = options["mode"]
 
-    # fetch 10-K filings and extract financial data points
-    res = get_10k_filing_texts(ticker)
-    financials = get_company_financials(res, cache=(not options["reset_cache"]))
+    filings = get_10k_filing_texts(ticker)
 
-    if options["reset_cache"]:
-        st.cache_data.clear()
+    # title in main content area
+    st.header(
+        (
+            f"{ticker}'s Numbers Over Time"
+            if mode == "Analyze"
+            else f"{ticker} 10-K Filings Summarizer"
+        ),
+        divider="rainbow",
+    )
 
-    # display financial data
-    display_financial_data(financials, ticker, table=(options["view"] == "Table"))
+    # change main content based on selected mode
+    if options["mode"] == "Analyze":
+        # fetch 10-K filings and extract financial data points
+        financials = get_company_financials(
+            filings, cache=(not options["reset_findata_cache"])
+        )
+        if options["reset_findata_cache"]:
+            st.cache_data.clear()
+        # display financial data
+        display_financial_data(financials, ticker, table=(options["view"] == "Table"))
+    else:
+        # display summarizer
+        display_summarizer(filings)
 
 
 if __name__ == "__main__":
