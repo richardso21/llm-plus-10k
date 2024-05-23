@@ -28,7 +28,7 @@ Below is a list of libraries/tools I've used heavily in this project:
 - [`edgartools`](https://github.com/dgunning/edgartools): One of the most
   polished and well-featured libraries for retrieving 10-K filings from SEC EDGAR
   that I've encountered. Ability to extract raw text from each filing with
-  ease.
+  ease. Also works especially well as a CLI tool for debugging/exploration.
 
 - [`gemini-1.5-flash-latest`](https://ai.google.dev/gemini-api): The LLM API of
   choice for this project. It supports a very generous input context window (up
@@ -38,5 +38,7 @@ Below is a list of libraries/tools I've used heavily in this project:
 
 - [`streamlit`](https://github.com/streamlit/streamlit): Used for the UI
   frontend for displaying visualizations, showing user options, input for calling
-  the LLM API, etc. I used Streamlit Community Cloud to host this project site.
+  the LLM API, etc. Library was especially intuitive and was hassle-free for
+  the most part. Additionally, I used Streamlit Community Cloud to host this
+  project site.
 
