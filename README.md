@@ -1,5 +1,7 @@
 # LLM + 10-K
 
+![screenshot](assets/screenshot.png)
+
 Leveraging Large Language Models (LLMs) to extract, summarize, financial
 information out of 10-K filings derived from the
 [SEC EDGAR database](https://www.sec.gov/edgar/search-and-access).
