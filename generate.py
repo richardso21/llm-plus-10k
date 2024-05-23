@@ -14,7 +14,7 @@ from tqdm import tqdm
 from constants import DEFAULT_ITEMS, MODEL, PREAMBLE
 from utils import CompanyFilingTexts
 
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel(model_name=MODEL, system_instruction=PREAMBLE)
 
 
