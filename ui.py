@@ -5,7 +5,7 @@ import plotly.express as px
 import streamlit as st
 from altair import List
 
-from constants import DATA_DISPLAY_MODES, DISCLAIMER, MODES, SECTIONS
+from constants import DATA_DISPLAY_MODES, DEFAULT_ITEMS, DISCLAIMER, MODES, SECTIONS
 from generate import CompanyFinancials, summarize_filing_document
 from utils import CompanyFilingTexts
 
@@ -36,6 +36,10 @@ def setup_sidebar(tickers: List[str]) -> Dict[str, str]:
         res["view"] = st.sidebar.radio("Data View", DATA_DISPLAY_MODES)
 
         # edit financial items for analysis
+        expander = st.sidebar.expander("Advanced Settings", expanded=False)
+        res["fin_items"] = expander.text_area(
+            "Financial Items (newline-separated)", "\n".join(DEFAULT_ITEMS)
+        )
 
         # rerun/reset button
         res["reset_findata_cache"] = st.sidebar.button(

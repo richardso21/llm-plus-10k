@@ -32,8 +32,9 @@ def main():
     # change main content based on selected mode
     if options["mode"] == "Analyze":
         # fetch 10-K filings and extract financial data points
+        items = [i.strip() for i in options["fin_items"].strip().split("\n")]
         financials = get_company_financials(
-            filings, cache=(not options["reset_findata_cache"])
+            filings, cache=(not options["reset_findata_cache"]), items=items
         )
         if options["reset_findata_cache"]:
             st.cache_data.clear()
