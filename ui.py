@@ -20,6 +20,8 @@ def setup_sidebar(tickers: List[str]) -> Dict[str, str]:
     st.sidebar.subheader("_Analysis of 10-K Filings with the power of LLM's_")
     st.sidebar.markdown("##### _By Richard So_")
 
+    st.sidebar.markdown(DISCLAIMER)
+
     st.sidebar.markdown("---")
 
     st.sidebar.markdown("## Display Options")
@@ -50,9 +52,6 @@ def setup_sidebar(tickers: List[str]) -> Dict[str, str]:
         )
     else:
         res["view"] = None
-
-    st.sidebar.write("#")
-    st.sidebar.markdown(DISCLAIMER)
 
     return res
 
@@ -108,7 +107,10 @@ def display_summarizer(filings: CompanyFilingTexts, stream: bool = True) -> None
         year = list(filings.keys())[0]
 
     c3, c4 = summarizer_options.columns([0.8, 0.2])
-    override_instr = c3.text_input("Override Instructions")
+    override_instr = c3.text_input(
+        "Override Instructions (Optional)",
+        placeholder="Answer using bullet points. Use 1-2 paragraphs. etc...",
+    )
     c4.write("####")  # offset the button lower to align with the text input
     submitted = c4.form_submit_button(
         "Summarize",

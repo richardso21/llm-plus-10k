@@ -20,6 +20,4 @@ SECTIONS = {
 DISCLAIMER = f"_**Note**: All financial data and text generations is derived \
     from 10-K filings derived from the SEC EDGAR database using a LLM \
     (**{MODEL}**). Data points and summarizations may not be 100% accurate, \
-    and missing data points indicate that the LLM was unable to retrieve \
-    the relevant information from the filing in the relevant year. \
-    Refer to the filings for further clarification._"
+    refer to EDGAR for further information._"
