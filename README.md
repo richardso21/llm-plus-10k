@@ -19,6 +19,10 @@ parse through them by hand.
 
 - Retrieve, compile, and visualize key metrics (e.g. net sales, gross margin)
   across a timespan
+  - Default metrics are: Net Sales, Gross Margin, and Total Cost of Operations.
+    I picked these since they seem to be discussed quite commonly across the
+    board for the tickers I've selected. They stand to be crucial in an
+    intuitive sense in evaluating the financial status of a company.
   - Ability to customize metrics that the LLM retrieves from 10-K filings
 - Compare key metrics across three different companies/tickers
 - Generate summaries of important sections of a particular Form 10-K
